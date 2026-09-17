@@ -223,3 +223,37 @@ st.info(
     "버블의 크기를 통해 개봉 첫 주 초반 흥행 기세가 최종 관객수로 얼마나 이어졌는지 세 가지 변수를 동시에 비교할 수 있습니다."
 )
 st.markdown("---")
+
+
+# -------------------------------------------------------------------
+# 일곱 번째 그래프: 제작 국가 및 장르별 영화 편수 (선버스트)
+# -------------------------------------------------------------------
+st.subheader("7. 제작 국가 및 장르별 영화 편수 분포 (선버스트)")
+
+# 제작 국가와 장르별 영화 편수 집계
+nation_genre_counts = (
+    df.groupby(["nation", "genre"]).size().reset_index(name="count")
+)
+
+# 선버스트 차트 생성: 계층(path)은 제작 국가 -> 장르, 크기(values)는 영화 편수
+fig_sunburst = px.sunburst(
+    nation_genre_counts,
+    path=["nation", "genre"],
+    values="count",
+    title="제작 국가 및 장르별 영화 편수 (안쪽: 국가, 바깥쪽: 장르)",
+    color="nation",
+)
+
+# 마우스 호버 시 범주 및 영화 편수 표시 설정
+fig_sunburst.update_traces(
+    hovertemplate="<b>%{label}</b><br>영화 편수: %{value}편<extra></extra>"
+)
+
+st.plotly_chart(fig_sunburst, use_container_width=True)
+
+st.markdown("---")
+st.markdown("💡 **이 그래프로 알 수 있는 것**")
+st.info(
+    "주요 제작 국가별로 어떤 장르의 영화가 주로 개봉했는지 계층적 비중을 다차원적으로 한눈에 비교할 수 있습니다."
+)
+st.markdown("---")
