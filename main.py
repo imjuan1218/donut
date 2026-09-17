@@ -115,3 +115,31 @@ st.info(
     f"가장 관객이 많은 영화는 **'{top_movie_name}'**(총 {top_movie_audi:,}명)입니다."
 )
 st.markdown("---")
+
+# -------------------------------------------------------------------
+# 네 번째 그래프: 개봉일 스크린수 vs 총 관객수 (산점도)
+# -------------------------------------------------------------------
+st.subheader("4. 개봉일 스크린수와 총 관객수의 관계")
+
+# 산점도 생성: x축 = 개봉일 스크린수, y축 = 총 관객수, 색상 = 장르, 호버 데이터 = 영화명
+fig_scatter = px.scatter(
+    df,
+    x="first_scrn",
+    y="total_audi",
+    color="genre",
+    hover_name="movieNm",
+    title="개봉일 스크린수 vs 총 관객수",
+    labels={"first_scrn": "개봉일 스크린수", "total_audi": "총 관객수", "genre": "장르"},
+)
+
+# 마우스 호버 시 표시 정보 설정
+fig_scatter.update_traces(
+    hovertemplate="<b>%{hovertext}</b><br>개봉일 스크린수: %{x:,}개<br>총 관객수: %{y:,}명<extra></extra>"
+)
+
+st.plotly_chart(fig_scatter, use_container_width=True)
+
+st.markdown("---")
+st.markdown("💡 **이 그래프로 알 수 있는 것**")
+st.info("개봉일 스크린수가 많을수록 총 관객수도 증가하는 경향을 보이는지, 그리고 특정 장르가 초기 스크린 확보 및 최종 관객수 선점에 유리했는지 파악할 수 있습니다.")
+st.markdown("---")
