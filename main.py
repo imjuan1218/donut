@@ -143,3 +143,83 @@ st.markdown("---")
 st.markdown("💡 **이 그래프로 알 수 있는 것**")
 st.info("개봉일 스크린수가 많을수록 총 관객수도 증가하는 경향을 보이는지, 그리고 특정 장르가 초기 스크린 확보 및 최종 관객수 선점에 유리했는지 파악할 수 있습니다.")
 st.markdown("---")
+
+# -------------------------------------------------------------------
+# 다섯 번째 그래프: 영화 10편 이상 장르의 총 관객수 분포 (박스플롯)
+# -------------------------------------------------------------------
+st.subheader("5. 영화 10편 이상 장르별 총 관객수 분포 (상자 그림)")
+
+# 영화 수가 10편 이상인 장르 필터링
+genre_counts_series = df["genre"].value_counts()
+major_genres = genre_counts_series[genre_counts_series >= 10].index
+df_filtered = df[df["genre"].isin(major_genres)]
+
+# 박스플롯 생성: x축 = 장르, y축 = 총 관객수, 이상치/점 호버 정보 = 영화명
+fig_box = px.box(
+    df_filtered,
+    x="genre",
+    y="total_audi",
+    color="genre",
+    hover_name="movieNm",
+    points="outliers",  # 이상치 점 표시
+    title="영화 10편 이상 장르별 총 관객수 분포",
+    labels={"genre": "장르", "total_audi": "총 관객수"},
+)
+
+# 마우스 호버 시 영화명 및 총 관객수 표시 설정
+fig_box.update_traces(
+    hovertemplate="<b>%{hovertext}</b><br>총 관객수: %{y:,}명<extra></extra>"
+)
+
+st.plotly_chart(fig_box, use_container_width=True)
+
+st.markdown("---")
+st.markdown("💡 **이 그래프로 알 수 있는 것**")
+st.info(
+    "영화 수가 10편 이상인 주력 장르별 관객수 중앙값과 분포 범위를 비교할 수 있으며, "
+    "상자 밖 튀는 점(이상치)을 통해 동일 장르 내에서 대흥행한 특이점 영화를 식별할 수 있습니다."
+)
+st.markdown("---")
+
+# -------------------------------------------------------------------
+# 여섯 번째 그래프: 개봉일 스크린수 vs 총 관객수 + 첫 주 관객수 (버블 차트)
+# -------------------------------------------------------------------
+st.subheader("6. 개봉일 스크린수, 총 관객수, 첫 주 관객수의 관계 (버블 차트)")
+
+# 버블 차트 생성: x축 = 개봉일 스크린수, y축 = 총 관객수, 크기 = 첫 주 관객수, 색상 = 장르
+fig_bubble = px.scatter(
+    df,
+    x="first_scrn",
+    y="total_audi",
+    size="first_week_audi",
+    color="genre",
+    hover_name="movieNm",
+    size_max=40,  # 버블 최대 크기 조절
+    title="개봉일 스크린수 vs 총 관객수 (버블 크기 = 개봉 첫 주 관객수)",
+    labels={
+        "first_scrn": "개봉일 스크린수",
+        "total_audi": "총 관객수",
+        "first_week_audi": "개봉 첫 주 관객수",
+        "genre": "장르",
+    },
+)
+
+# 마우스 호버 시 표시 정보 설정
+fig_bubble.update_traces(
+    hovertemplate=(
+        "<b>%{hovertext}</b><br>"
+        "개봉일 스크린수: %{x:,}개<br>"
+        "총 관객수: %{y:,}명<br>"
+        "개봉 첫 주 관객수: %{marker.size:,}명<extra></extra>"
+    )
+)
+
+st.plotly_chart(fig_bubble, use_container_width=True)
+
+st.markdown("---")
+st.markdown("💡 **이 그래프로 알 수 있는 것**")
+st.info(
+    "개봉일 스크린수와 총 관객수의 관계뿐만 아니라, "
+    "버블의 크기를 통해 개봉 첫 주 초반 흥행 기세가 최종 관객수로 얼마나 이어졌는지 세 가지 변수를 동시에 비교할 수 있습니다."
+)
+st.markdown("---")
