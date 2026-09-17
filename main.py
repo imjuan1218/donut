@@ -56,3 +56,62 @@ st.markdown("💡 **이 그래프로 알 수 있는 것**")
 st.info("어떤 장르의 영화가 박스오피스 상위권에 가장 많이 포함되었는지 전체적인 비중을 한눈에 파악할 수 있습니다.")
 st.markdown("---")
 
+# -------------------------------------------------------------------
+# 두 번째 그래프: 장르 내 영화별 총 관객수 (트리맵)
+# -------------------------------------------------------------------
+st.subheader("2. 장르 및 영화별 총 관객수 분포")
+
+# 트리맵 생성: 계층(path)은 장르 -> 영화명, 크기(values)는 총 관객수
+fig_treemap = px.treemap(
+    df,
+    path=["genre", "movieNm"],
+    values="total_audi",
+    title="장르 및 영화별 총 관객수 (칸 크기 = 총 관객수)",
+    color="genre",
+)
+
+# 마우스 호버 시 영화명(label)과 총 관객수(value) 표시 설정
+fig_treemap.update_traces(
+    hovertemplate="<b>%{label}</b><br>총 관객수: %{value:,}명<extra></extra>"
+)
+
+st.plotly_chart(fig_treemap, use_container_width=True)
+
+st.markdown("---")
+st.markdown("💡 **이 그래프로 알 수 있는 것**")
+st.info("각 장르 안에서 어떤 영화가 흥행을 주도했는지, 그리고 전체 관객수에서 특정 영화가 차지하는 비중을 직관적으로 비교할 수 있습니다.")
+st.markdown("---")
+
+# -------------------------------------------------------------------
+# 세 번째 그래프: 총 관객수 분포 (히스토그램)
+# -------------------------------------------------------------------
+st.subheader("3. 총 관객수 분포 (히스토그램)")
+
+# 히스토그램 생성
+fig_hist = px.histogram(
+    df,
+    x="total_audi",
+    nbins=30,
+    title="영화별 총 관객수 분포",
+    labels={"total_audi": "총 관객수", "count": "영화 수"},
+)
+
+# 마우스 호버 시 구간과 영화 수 표시 설정
+fig_hist.update_traces(
+    hovertemplate="<b>관객수 구간: %{x}</b><br>영화 수: %{y}편<extra></extra>"
+)
+
+st.plotly_chart(fig_hist, use_container_width=True)
+
+# 가장 관객 수가 많은 영화 자동 추출
+top_movie = df.loc[df["total_audi"].idxmax()]
+top_movie_name = top_movie["movieNm"]
+top_movie_audi = top_movie["total_audi"]
+
+st.markdown("---")
+st.markdown("💡 **이 그래프로 알 수 있는 것**")
+st.info(
+    f"대부분의 영화는 관객수가 약 100만 명 이하의 구간에 밀집되어 있으며, "
+    f"가장 관객이 많은 영화는 **'{top_movie_name}'**(총 {top_movie_audi:,}명)입니다."
+)
+st.markdown("---")
