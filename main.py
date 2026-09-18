@@ -255,3 +255,72 @@ st.text_area(
     key="insight_7",
 )
 st.markdown("---")
+
+# -------------------------------------------------------------------
+# 여덟 번째 그래프: 계절별 개봉 영화 편수 및 총 관객수 (막대 그래프)
+# -------------------------------------------------------------------
+st.subheader("8. 계절별 개봉 영화 편수 및 총 관객수")
+
+# 개봉일(openDt)에서 월 추출 및 계절 파생변수 생성
+df_season = df.copy()
+df_season["month"] = (
+    pd.to_datetime(df_season["openDt"].astype(str), format="%Y%m%d").dt.month
+)
+
+
+def get_season(month):
+    if month in [3, 4, 5]:
+        return "봄 (3~5월)"
+    elif month in [6, 7, 8]:
+        return "여름 (6~8월)"
+    elif month in [9, 10, 11]:
+        return "가을 (9~11월)"
+    else:
+        return "겨울 (12~2월)"
+
+
+df_season["season"] = df_season["month"].apply(get_season)
+
+# 계절 순서 정렬을 위한 범주형 데이터 설정
+season_order = ["봄 (3~5월)", "여름 (6~8월)", "가을 (9~11월)", "겨울 (12~2월)"]
+
+# 계절별 관객수 합계 및 편수 집계
+season_summary = (
+    df_season.groupby("season")
+    .agg(total_audi=("total_audi", "sum"), movie_count=("movieCd", "count"))
+    .reindex(season_order)
+    .reset_index()
+)
+
+# 막대 그래프 생성 (계절별 총 관객수)
+fig_season = px.bar(
+    season_summary,
+    x="season",
+    y="total_audi",
+    text="movie_count",
+    color="season",
+    title="계절별 총 관객수 및 개봉 편수 (막대 위 숫자 = 개봉 편수)",
+    labels={
+        "season": "계절",
+        "total_audi": "총 관객수",
+        "movie_count": "개봉 편수",
+    },
+)
+
+# 마우스 호버 및 막대 위 텍스트 설정
+fig_season.update_traces(
+    texttemplate="%{text}편",
+    textposition="outside",
+    hovertemplate="<b>%{x}</b><br>총 관객수: %{y:,}명<br>개봉 편수: %{text}편<extra></extra>",
+)
+
+st.plotly_chart(fig_season, use_container_width=True)
+
+st.markdown("---")
+st.markdown("💡 **이 그래프로 알 수 있는 것**")
+st.text_area(
+    "분석 내용을 작성하세요:",
+    placeholder="이 그래프를 통해 알 수 있는 점을 적어보세요.",
+    key="insight_8",
+)
+st.markdown("---")
